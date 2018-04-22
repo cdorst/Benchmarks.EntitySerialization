@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27617.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonBenchmarks", "JsonBenchmarks\JsonBenchmarks.csproj", "{661FC8DE-2DB6-4F7B-BD41-BACD55FB0B32}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonBenchmarks", "JsonBenchmarks\JsonBenchmarks.csproj", "{661FC8DE-2DB6-4F7B-BD41-BACD55FB0B32}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4099FC2C-B95B-42B0-A366-FFB35B69A2B4}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+		run.ps1 = run.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
