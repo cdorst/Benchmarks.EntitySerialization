@@ -3,43 +3,157 @@ using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Exporters;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Running;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace JsonBenchmarks
 {
+    public static class Constants
+    {
+        public static readonly byte[] Bytes = new Entity().ToBytes();
+        public static readonly Entity Entity = new Entity();
+        public static readonly Jil.Options JilOptions = new Jil.Options(excludeNulls: true);
+        public static readonly string Json = Jil.JSON.Serialize(Entity, JilOptions);
+        public static readonly HttpClient Server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AspNetStartup>().ConfigureLogging(logging => logging.ClearProviders())).CreateClient();
+    }
+
     [CoreJob]
     [RPlotExporter, RankColumn]
-    public class JsonTests
+    public class Tests
     {
         [Benchmark]
-        public byte[] BlockCopyIntegerBytes() => Entity.Default.ToBytes();
+        public Entity BlockCopyDeserialize() => Entity.FromBytes(Constants.Bytes, Constants.Entity.EntityId);
+        [Benchmark]
+        public byte[] BlockCopySerialize() => Constants.Entity.ToBytes();
         [Benchmark]
         public byte[] BlockCopyMixedBytes() => MixedKeyTypes.Default.ToBytes();
         [Benchmark]
-        public string StringBuilderCsv() => Entity.Default.ToStringCsv();
+        public string StringBuilderCsv() => Constants.Entity.ToStringCsv();
         [Benchmark]
-        public string JilJson() => Jil.JSON.Serialize(Entity.Default);
+        public string JilJsonSerialize() => Jil.JSON.Serialize(Constants.Entity, Constants.JilOptions);
         [Benchmark]
-        public string StringBuilderJson() => Entity.Default.ToString();
+        public Entity JilJsonDeserialize() => Jil.JSON.Deserialize<Entity>(Constants.Json);
         [Benchmark]
-        public string NewtonsoftJson() => JsonConvert.SerializeObject(Entity.Default);
+        public string StringBuilderJson() => Constants.Entity.ToString();
+        [Benchmark]
+        public string NewtonsoftJson() => JsonConvert.SerializeObject(Constants.Entity);
+
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiDefaultJson() => await Constants.Server.GetAsync("/resource/json-default");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiJilJsonFormatter() => await Constants.Server.GetAsync("/resource/json-formatter");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiJilJsonActionResult() => await Constants.Server.GetAsync("/resource/json-actionresult");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiCsv() => await Constants.Server.GetAsync("/resource/csv");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiByteArray() => await Constants.Server.GetAsync("/resource/bytes");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiByteArrayActionResult() => await Constants.Server.GetAsync("/resource/bytes-actionresult");
     }
 
     public class Program
     {
         public static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<JsonTests>();
-            var csvString = Entity.Default.ToStringCsv();
-            var csvLength = csvString.Length;
-            var jsonString = Entity.Default.ToString();
-            var jsonLength = jsonString.Length;
-            Console.WriteLine($"CSV string: {csvString}");
-            Console.WriteLine($"JSON string: {jsonString}");
-            Console.WriteLine($"Length of CSV string: {csvLength}");
-            Console.WriteLine($"Length of JSON string: {jsonLength}");
-            Console.WriteLine($"CSV string contains {((decimal)csvLength / jsonLength).ToString("p")} as much data as the JSON representation");
+            var summary = BenchmarkRunner.Run<Tests>();
+            var dataTable = File.ReadAllLines(Path.Combine(Environment.CurrentDirectory, "BenchmarkDotNet.Artifacts", "results", "Tests-report-github.md"));
+            var resultSummary = GetResultSummary(dataTable).Split(Environment.NewLine);
+            foreach (var line in resultSummary) Console.WriteLine(line);
+            var readme = new StringBuilder()
+                .Append("# ASP.NET Core 2.1 data serialization benchmarks for a typical entity")
+                .AppendLine()
+                .AppendLine("Run `./run.ps1` at the repository root to repeat the experiment")
+                .AppendLine()
+                .AppendLine("## Question")
+                .AppendLine()
+                .AppendLine("What is the most performant method of data serialization for resources served by ASP.NET Core 2.1 APIs?")
+                .AppendLine()
+                .AppendLine("## Variables")
+                .AppendLine()
+                .AppendLine("Three categories of serialization are tested:")
+                .AppendLine()
+                .AppendLine("- JSON")
+                .AppendLine("- CSV (with a single `StringBuilder` implementation)")
+                .AppendLine("- byte[] (with a single `Buffer.BlockCopy()` implementation)")
+                .AppendLine()
+                .AppendLine("Within the JSON category, three different methodologies of serializing JSON are tested:")
+                .AppendLine()
+                .AppendLine("- StringBuilder used to append values to string returned by .ToString() override")
+                .AppendLine("- The `Jil` JSON serialization library, version `2.15.4` with optional `excludeNulls` behavior")
+                .AppendLine("- The `Newtonsoft.Json` JSON serialization library, version `11.0.2`")
+                .AppendLine()
+                .AppendLine("`Newtonsoft.Json`, `Jil`, CSV, and byte[] scenarios are also tested on an in-memory ASP.NET Core web host")
+                .AppendLine()
+                .AppendLine("## Hypothesis")
+                .AppendLine()
+                .AppendLine("`Jil` is expected to be more performant than `Newtonsoft.Json` based on the [github.com/aspnet/benchmarks](https://github.com/aspnet/benchmarks) work")
+                .AppendLine("`StringBuilder` is expected to perform well given the benchmarking published in [this blog post](https://blogs.msdn.microsoft.com/dotnet/2018/04/18/performance-improvements-in-net-core-2-1/).")
+                .AppendLine("CSV should perform much better than JSON since it is schema-less.")
+                .AppendLine("Byte-array block copy should perform even better than CSV since it is also schema-less and contains less data")
+                .AppendLine()
+                .AppendLine("## Results")
+                .AppendLine();
+            foreach (var line in dataTable) readme.AppendLine(line);
+            readme.AppendLine();
+            foreach (var line in resultSummary) readme.AppendLine(line);
+            readme
+                .AppendLine("## Conclusion")
+                .AppendLine()
+                .AppendLine("byte[] block-copy serialization outperformed other methods in terms of data-size, serialization runtime, and API request-response runtime.")
+                .AppendLine()
+                .AppendLine("The resultant Data Table indicates that the in-memory ASP.NET Core server is less performant in handling object results (with or without a Formatter attribute) than when handling IActionResults")
+                .AppendLine()
+                .AppendLine("## Future Research")
+                .AppendLine()
+                .AppendLine("Compare the Jil with JilFormatterAttribute, Jil with JsonActionResult, CSV, and byte[] endpoint performance using a non in-memory test infrastructure like the [github.com/aspnet/benchmarks](https://github.com/aspnet/benchmarks) project.")
+                .AppendLine()
+                .AppendLine("Discovery of better performance with Jil IActionResult scenario than JilFormatterAttribute scenario could yield an improved MvcJson score")
+                .AppendLine();
+            File.WriteAllText("../README.md", readme.ToString());
         }
+
+        private static string GetResultSummary(string[] dataTable)
+        {
+            var (apiJsonNetResponseTime, apiJilJsonResponseTime, apiCsvResponseTime, apiBytesResponseTime) = parseApiResponseTimes(dataTable);
+            var csvLength = Encoding.UTF8.GetBytes(Constants.Entity.ToStringCsv()).Length;
+            var jsonLength = Encoding.UTF8.GetBytes(Constants.Json).Length;
+            var bytesLength = Constants.Entity.ToBytes().Length;
+            return new StringBuilder()
+                .AppendLine($"CSV byte[] length: {csvLength}") // 15
+                .AppendLine($"JSON byte[] length: {jsonLength}") // 72
+                .AppendLine($"Bytes byte[] length: {bytesLength}") // 8
+                .AppendLine($"CSV string is {((decimal)jsonLength / csvLength).ToString("N1")/*4.8*/}x more compact than JSON representation")
+                .AppendLine($"ToBytes result is {((decimal)jsonLength / bytesLength).ToString("N1")/*9.0*/}x more compact than JSON representation and {((decimal)csvLength / bytesLength).ToString("N1")/*1.9*/}x more compact than CSV")
+                .AppendLine()
+                .AppendLine($"Deserialized bytes entity as json: `{Jil.JSON.Serialize(Entity.FromBytes(Constants.Bytes, Constants.Entity.EntityId), Constants.JilOptions)}`")
+                .AppendLine()
+                .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiJilJsonResponseTime, "Jil JSON"))
+                .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiCsvResponseTime, "CSV"))
+                .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiBytesResponseTime, "byte[]"))
+                .ToString();
+        }
+
+        private static string CompareResponseTime(decimal slowResponseTime, decimal fastResponseTime, string label)
+            => $"In-memory ASP.NET Core web server {label} endpoint responds {(slowResponseTime / fastResponseTime - 1).ToString("p")} faster than default JsonFormatter endpoint";
+
+        private static (decimal apiJsonNetResponseTime, decimal apiJilJsonResponseTime, decimal apiCsvResponseTime, decimal apiBytesResponseTime) parseApiResponseTimes(string[] dataTable)
+            => (
+            parseResponseTime(dataTable, nameof(Tests.AspNetCoreApiDefaultJson)),
+            parseResponseTime(dataTable, nameof(Tests.AspNetCoreApiJilJsonActionResult)),
+            parseResponseTime(dataTable, nameof(Tests.AspNetCoreApiCsv)),
+            parseResponseTime(dataTable, nameof(Tests.AspNetCoreApiByteArrayActionResult)));
+
+        private static decimal parseResponseTime(string[] dataTable, string method)
+            => decimal.Parse(dataTable.First(line => line.Contains(method)).Split('|').Skip(2).First().Replace(",", "").Replace("ns", "").Trim());
     }
 }

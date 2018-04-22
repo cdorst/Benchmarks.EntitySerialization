@@ -5,8 +5,6 @@ namespace JsonBenchmarks
 {
     public class Entity
     {
-        public static Entity Default = new Entity();
-
         public int EntityId { get; set; } = 1_000_000;
 
         public Foo ForeignKeyOne { get; set; } // Assume that reference objects are not loaded
@@ -26,6 +24,20 @@ namespace JsonBenchmarks
         /// </summary>
         public string ToStringCsv()
             => new StringBuilder().Append(ForeignKeyOneId).Append(',').Append(ForeignKeyTwoId).ToString();
+
+        public static Entity FromBytes(byte[] bytes, int entityId = 0)
+        {
+            var foreignKeyOneIdBytes = new byte[4];
+            Buffer.BlockCopy(bytes, 0, foreignKeyOneIdBytes, 0, 4);
+            var foreignKeyTwoIdBytes = new byte[4];
+            Buffer.BlockCopy(bytes, 4, foreignKeyTwoIdBytes, 0, 4);
+            return new Entity
+            {
+                EntityId = entityId,
+                ForeignKeyOneId = BitConverter.ToInt32(foreignKeyOneIdBytes, 0),
+                ForeignKeyTwoId = BitConverter.ToInt32(foreignKeyTwoIdBytes, 0)
+            };
+        }
 
         public byte[] ToBytes()
         {
