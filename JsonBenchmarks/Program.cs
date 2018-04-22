@@ -97,8 +97,11 @@ namespace JsonBenchmarks
                 .AppendLine("## Hypothesis")
                 .AppendLine()
                 .AppendLine("`Jil` is expected to be more performant than `Newtonsoft.Json` based on the [github.com/aspnet/benchmarks](https://github.com/aspnet/benchmarks) work")
+                .AppendLine()
                 .AppendLine("`StringBuilder` is expected to perform well given the benchmarking published in [this blog post](https://blogs.msdn.microsoft.com/dotnet/2018/04/18/performance-improvements-in-net-core-2-1/).")
+                .AppendLine()
                 .AppendLine("CSV should perform much better than JSON since it is schema-less.")
+                .AppendLine()
                 .AppendLine("Byte-array block copy should perform even better than CSV since it is also schema-less and contains less data")
                 .AppendLine()
                 .AppendLine("## Results")
@@ -129,16 +132,26 @@ namespace JsonBenchmarks
             var jsonLength = Encoding.UTF8.GetBytes(Constants.Json).Length;
             var bytesLength = Constants.Entity.ToBytes().Length;
             return new StringBuilder()
+                .AppendLine("### Data Size")
+                .AppendLine()
                 .AppendLine($"CSV byte[] length: {csvLength}") // 15
+                .AppendLine()
                 .AppendLine($"JSON byte[] length: {jsonLength}") // 72
+                .AppendLine()
                 .AppendLine($"Bytes byte[] length: {bytesLength}") // 8
+                .AppendLine()
                 .AppendLine($"CSV string is {((decimal)jsonLength / csvLength).ToString("N1")/*4.8*/}x more compact than JSON representation")
+                .AppendLine()
                 .AppendLine($"ToBytes result is {((decimal)jsonLength / bytesLength).ToString("N1")/*9.0*/}x more compact than JSON representation and {((decimal)csvLength / bytesLength).ToString("N1")/*1.9*/}x more compact than CSV")
                 .AppendLine()
                 .AppendLine($"Deserialized bytes entity as json: `{Jil.JSON.Serialize(Entity.FromBytes(Constants.Bytes, Constants.Entity.EntityId), Constants.JilOptions)}`")
                 .AppendLine()
+                .AppendLine("### API Response Time")
+                .AppendLine()
                 .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiJilJsonResponseTime, "Jil JSON"))
+                .AppendLine()
                 .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiCsvResponseTime, "CSV"))
+                .AppendLine()
                 .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiBytesResponseTime, "byte[]"))
                 .ToString();
         }
