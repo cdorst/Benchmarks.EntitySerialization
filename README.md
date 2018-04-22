@@ -1,4 +1,4 @@
-# ASP.NET Core 2.1 data serialization benchmarks for a typical entity
+# ASP.NET Core 2.1 API entity data-serialization benchmarks
 Run `./run.ps1` at the repository root to repeat the experiment
 
 ## Question
@@ -47,20 +47,20 @@ Job=Core  Runtime=Core
 ```
 |                             Method |          Mean |         Error |        StdDev | Rank |
 |----------------------------------- |--------------:|--------------:|--------------:|-----:|
-|               BlockCopyDeserialize |      40.74 ns |     0.3683 ns |     0.3265 ns |    3 |
-|                 BlockCopySerialize |      21.66 ns |     0.3769 ns |     0.3341 ns |    1 |
-|                BlockCopyMixedBytes |      25.73 ns |     0.6056 ns |     0.7659 ns |    2 |
-|                   StringBuilderCsv |     153.14 ns |     1.6019 ns |     1.3376 ns |    4 |
-|                   JilJsonSerialize |     395.18 ns |     3.3381 ns |     3.1225 ns |    5 |
-|                 JilJsonDeserialize |     415.73 ns |     1.1122 ns |     0.8042 ns |    6 |
-|                  StringBuilderJson |     500.10 ns |     5.8911 ns |     5.5106 ns |    7 |
-|                     NewtonsoftJson |   1,393.67 ns |    17.0376 ns |    15.9370 ns |    8 |
-|           AspNetCoreApiDefaultJson | 103,404.97 ns | 1,351.0708 ns | 1,128.2052 ns |   14 |
-|      AspNetCoreApiJilJsonFormatter | 101,058.29 ns | 1,167.5564 ns | 1,092.1328 ns |   13 |
-|   AspNetCoreApiJilJsonActionResult |  90,261.51 ns |   855.3045 ns |   714.2180 ns |   11 |
-|                   AspNetCoreApiCsv |  81,342.03 ns | 1,526.0148 ns | 1,567.1047 ns |   10 |
-|             AspNetCoreApiByteArray |  97,260.16 ns | 1,025.2694 ns |   908.8745 ns |   12 |
-| AspNetCoreApiByteArrayActionResult |  78,722.34 ns | 1,376.4602 ns | 1,149.4065 ns |    9 |
+|               BlockCopyDeserialize |      40.87 ns |     0.2864 ns |     0.2392 ns |    3 |
+|                 BlockCopySerialize |      22.65 ns |     0.5252 ns |     0.5393 ns |    1 |
+|                BlockCopyMixedBytes |      25.22 ns |     0.4293 ns |     0.4015 ns |    2 |
+|                   StringBuilderCsv |     154.14 ns |     1.0769 ns |     0.9547 ns |    4 |
+|                   JilJsonSerialize |     390.83 ns |     4.7882 ns |     4.4789 ns |    5 |
+|                 JilJsonDeserialize |     436.18 ns |     3.5067 ns |     3.2801 ns |    6 |
+|                  StringBuilderJson |     514.66 ns |     8.9724 ns |     8.3928 ns |    7 |
+|                     NewtonsoftJson |   1,359.78 ns |    15.0929 ns |    14.1179 ns |    8 |
+|           AspNetCoreApiDefaultJson | 103,762.69 ns | 1,426.3361 ns | 1,334.1956 ns |   14 |
+|      AspNetCoreApiJilJsonFormatter |  99,669.44 ns |   987.8077 ns |   923.9959 ns |   13 |
+|   AspNetCoreApiJilJsonActionResult |  93,266.24 ns | 1,821.4925 ns | 1,703.8251 ns |   11 |
+|                   AspNetCoreApiCsv |  82,944.09 ns | 1,228.5272 ns | 1,025.8758 ns |   10 |
+|             AspNetCoreApiByteArray |  95,297.31 ns | 1,105.9473 ns | 1,034.5037 ns |   12 |
+| AspNetCoreApiByteArrayActionResult |  78,409.88 ns | 1,591.3476 ns | 2,124.4034 ns |    9 |
 
 ### Data Size
 
@@ -74,15 +74,17 @@ CSV string is 4.8x more compact than JSON representation
 
 ToBytes result is 9.0x more compact than JSON representation and 1.9x more compact than CSV
 
-Deserialized bytes entity as json: `{"EntityId":1000000,"ForeignKeyOneId":1000001,"ForeignKeyTwoId":1000002}`
-
 ### API Response Time
 
-In-memory ASP.NET Core web server Jil JSON endpoint responds 14.56% faster than default JsonFormatter endpoint
+In-memory ASP.NET Core web server Jil JSON endpoint responds 11.25% faster than default JsonFormatter endpoint
 
-In-memory ASP.NET Core web server CSV endpoint responds 27.12% faster than default JsonFormatter endpoint
+In-memory ASP.NET Core web server CSV endpoint responds 25.10% faster than default JsonFormatter endpoint
 
-In-memory ASP.NET Core web server byte[] endpoint responds 31.35% faster than default JsonFormatter endpoint
+In-memory ASP.NET Core web server byte[] endpoint responds 32.33% faster than default JsonFormatter endpoint
+
+### Proof of Working byte[] Serialization
+
+Entity serialized and deserialized to and from bytes printed as json: `{"EntityId":1000000,"ForeignKeyOneId":1000001,"ForeignKeyTwoId":1000002}`
 
 ## Conclusion
 

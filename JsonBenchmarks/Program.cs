@@ -70,7 +70,7 @@ namespace JsonBenchmarks
             var resultSummary = GetResultSummary(dataTable).Split(Environment.NewLine);
             foreach (var line in resultSummary) Console.WriteLine(line);
             var readme = new StringBuilder()
-                .Append("# ASP.NET Core 2.1 data serialization benchmarks for a typical entity")
+                .Append("# ASP.NET Core 2.1 API entity data-serialization benchmarks")
                 .AppendLine()
                 .AppendLine("Run `./run.ps1` at the repository root to repeat the experiment")
                 .AppendLine()
@@ -144,8 +144,6 @@ namespace JsonBenchmarks
                 .AppendLine()
                 .AppendLine($"ToBytes result is {((decimal)jsonLength / bytesLength).ToString("N1")/*9.0*/}x more compact than JSON representation and {((decimal)csvLength / bytesLength).ToString("N1")/*1.9*/}x more compact than CSV")
                 .AppendLine()
-                .AppendLine($"Deserialized bytes entity as json: `{Jil.JSON.Serialize(Entity.FromBytes(Constants.Bytes, Constants.Entity.EntityId), Constants.JilOptions)}`")
-                .AppendLine()
                 .AppendLine("### API Response Time")
                 .AppendLine()
                 .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiJilJsonResponseTime, "Jil JSON"))
@@ -153,6 +151,10 @@ namespace JsonBenchmarks
                 .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiCsvResponseTime, "CSV"))
                 .AppendLine()
                 .AppendLine(CompareResponseTime(apiJsonNetResponseTime, apiBytesResponseTime, "byte[]"))
+                .AppendLine()
+                .AppendLine("### Proof of Working byte[] Serialization")
+                .AppendLine()
+                .AppendLine($"Entity serialized and deserialized to and from bytes printed as json: `{Jil.JSON.Serialize(Entity.FromBytes(Constants.Bytes, Constants.Entity.EntityId), Constants.JilOptions)}`")
                 .ToString();
         }
 
