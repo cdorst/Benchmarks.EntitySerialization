@@ -120,7 +120,7 @@ namespace JsonBenchmarks
                 .AppendLine()
                 .AppendLine("Compare the Jil with JilFormatterAttribute, Jil with JsonActionResult, CSV, and byte[] endpoint performance using a non in-memory test infrastructure like the [github.com/aspnet/benchmarks](https://github.com/aspnet/benchmarks) project.")
                 .AppendLine()
-                .AppendLine("Discovery of better performance with Jil IActionResult scenario than JilFormatterAttribute scenario could yield an improved MvcJson score")
+                .AppendLine("Demonstration of better performance with Jil IActionResult scenario than JilFormatterAttribute scenario could yield an improved aspnetcore-mvc-linux Json Serialization [TechempowerBenchmarks](https://github.com/aspnet/benchmarks/blob/d4f95d12d5759feff49a03aa0e432ae7a79ebd6c/src/Benchmarks/Controllers/HomeController.cs#L28-L34) score")
                 .AppendLine();
             File.WriteAllText("../README.md", readme.ToString());
         }
