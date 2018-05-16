@@ -21,19 +21,33 @@ namespace JsonBenchmarks
     {
         public static readonly byte[] Bytes = new Entity().ToBytes();
         public static readonly Entity Entity = new Entity();
+        public static readonly int EntityId = new Entity().EntityId;
         public static readonly Jil.Options JilOptions = new Jil.Options(excludeNulls: true);
         public static readonly string Json = Jil.JSON.Serialize(Entity, JilOptions);
         public static readonly HttpClient Server = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AspNetStartup>().ConfigureLogging(logging => logging.ClearProviders())).CreateClient();
+        public static readonly HttpClient ServerUsingRouter = new TestServer(WebHost.CreateDefaultBuilder().UseStartup<AspNetStartupUseRouter>().ConfigureLogging(logging => logging.ClearProviders())).CreateClient();
     }
 
-    [CoreJob]
+    [SimpleJob(5)]
     [RPlotExporter, RankColumn]
     public class Tests
     {
         [Benchmark]
-        public Entity BlockCopyDeserialize() => Entity.FromBytes(Constants.Bytes, Constants.Entity.EntityId);
+        public Entity BlockCopyDeserialize() => Entity.FromBytes(Constants.Bytes, Constants.EntityId);
+        [Benchmark]
+        public Entity BlockCopyDeserializeByRef() => Entity.FromBytesInRef(Constants.Bytes, Constants.EntityId);
+
         [Benchmark]
         public byte[] BlockCopySerialize() => Constants.Entity.ToBytes();
+        [Benchmark]
+        public ReadOnlySpan<byte> ByteSerializeSpanBitConverter() => Constants.Entity.ToBytesSpanBitConverter();
+        [Benchmark]
+        public ReadOnlySpan<byte> ByteSerializeSpanStructReadonly() => Constants.Entity.ToBytesSpanStruct();
+        [Benchmark]
+        public ReadOnlyMemory<byte> ByteSerializeReadOnlyMemory() => Constants.Entity.ToBytesReadonlyMemory();
+        [Benchmark]
+        public ReadOnlySpan<byte> ByteSerializeReadOnlySpan() => Constants.Entity.ToBytesReadonlySpan();
+
         [Benchmark]
         public byte[] BlockCopyMixedBytes() => MixedKeyTypes.Default.ToBytes();
         [Benchmark]
@@ -59,6 +73,10 @@ namespace JsonBenchmarks
         public async Task<HttpResponseMessage> AspNetCoreApiByteArray() => await Constants.Server.GetAsync("/resource/bytes");
         [Benchmark]
         public async Task<HttpResponseMessage> AspNetCoreApiByteArrayActionResult() => await Constants.Server.GetAsync("/resource/bytes-actionresult");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiReadOnlyMemoryMvc() => await Constants.Server.GetAsync("/resource/bytes-readonlymemory");
+        [Benchmark]
+        public async Task<HttpResponseMessage> AspNetCoreApiReadOnlyMemoryRouter() => await Constants.ServerUsingRouter.GetAsync("/resource");
     }
 
     public class Program
@@ -140,9 +158,9 @@ namespace JsonBenchmarks
                 .AppendLine()
                 .AppendLine($"Bytes byte[] length: {bytesLength}") // 8
                 .AppendLine()
-                .AppendLine($"CSV string is {((decimal)jsonLength / csvLength).ToString("N1")/*4.8*/}x more compact than JSON representation")
+                .AppendLine($"CSV string is {((decimal)jsonLength / csvLength).ToString("N1")}x more compact than JSON representation")
                 .AppendLine()
-                .AppendLine($"ToBytes result is {((decimal)jsonLength / bytesLength).ToString("N1")/*9.0*/}x more compact than JSON representation and {((decimal)csvLength / bytesLength).ToString("N1")/*1.9*/}x more compact than CSV")
+                .AppendLine($"ToBytes result is {((decimal)jsonLength / bytesLength).ToString("N1")}x more compact than JSON representation and {((decimal)csvLength / bytesLength).ToString("N1")}x more compact than CSV")
                 .AppendLine()
                 .AppendLine("### API Response Time")
                 .AppendLine()

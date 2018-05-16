@@ -34,6 +34,9 @@ namespace JsonBenchmarks.Controllers
         [HttpGet("bytes-actionresult")]
         public IActionResult BytesAction() => new BytesActionResult(Constants.Entity.ToBytes());
 
+        [HttpGet("bytes-readonlymemory")]
+        public IActionResult BytesReadOnlyMemory() => new ReadOnlyMemoryActionResult(Constants.Entity.ToBytesReadonlyMemory());
+
         private class BytesActionResult : IActionResult
         {
             private readonly byte[] _payload;
@@ -51,6 +54,24 @@ namespace JsonBenchmarks.Controllers
                 response.StatusCode = StatusCodes.Status200OK;
                 response.ContentLength = _payloadLength;
                 return response.Body.WriteAsync(_payload, 0, _payloadLength);
+            }
+        }
+
+        private class ReadOnlyMemoryActionResult : IActionResult
+        {
+            private readonly ReadOnlyMemory<byte> _payload;
+
+            public ReadOnlyMemoryActionResult(ReadOnlyMemory<byte> bytes)
+            {
+                _payload = bytes;
+            }
+
+            public Task ExecuteResultAsync(ActionContext context)
+            {
+                var response = context.HttpContext.Response;
+                response.StatusCode = StatusCodes.Status200OK;
+                response.ContentLength = _payload.Length;
+                return response.Body.WriteAsync(_payload).AsTask();
             }
         }
 

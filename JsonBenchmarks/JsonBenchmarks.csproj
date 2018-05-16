@@ -8,9 +8,10 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
+    <PackageReference Include="CDorst.Common.Extensions.Memory" Version="1.1.0-rc1" />
     <PackageReference Include="Jil" Version="2.15.4" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-final" />
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-rc1-final" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.1.0-rc1-final" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
