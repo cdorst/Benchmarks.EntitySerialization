@@ -11,15 +11,22 @@ Three categories of serialization are tested:
 
 - JSON
 - CSV (with a single `StringBuilder` implementation)
-- byte[] (with a single `Buffer.BlockCopy()` implementation)
+- byte[]
 
-Within the JSON category, three different methodologies of serializing JSON are tested:
+Within the JSON category, these methodologies are tested:
 
 - StringBuilder used to append values to string returned by .ToString() override
 - The `Jil` JSON serialization library, version `2.15.4` with optional `excludeNulls` behavior
 - The `Newtonsoft.Json` JSON serialization library, version `11.0.2`
 
 `Newtonsoft.Json`, `Jil`, CSV, and byte[] scenarios are also tested on an in-memory ASP.NET Core web host
+
+Within the byte[] category, these methodologies are tested:
+
+- `Buffer.BlockCopy`
+- `Span<byte>`
+- `ReadOnlyMemory<byte>` using `CDorst.Common.Extensions.Memory
+- `ReadOnlySpan<byte>` using `CDorst.Common.Extensions.Memory
 
 ## Hypothesis
 
@@ -30,6 +37,8 @@ Within the JSON category, three different methodologies of serializing JSON are 
 CSV should perform much better than JSON since it is schema-less.
 
 Byte-array block copy should perform even better than CSV since it is also schema-less and contains less data
+
+The low-level ReadOnly Memory/Span types are expected to be more performant than the `Buffer.BlockCopy` implementation due to the simplicity of the serialization operation
 
 ## Results
 
@@ -94,7 +103,7 @@ Entity serialized and deserialized to and from bytes printed as json: `{"EntityI
 
 ## Conclusion
 
-byte[] block-copy serialization outperformed other methods in terms of data-size, serialization runtime, and API request-response runtime.
+byte[] (especially ReadOnlyMemory/Span) serialization outperforms other methods in terms of data-size, serialization runtime, and API request-response runtime.
 
 The resultant Data Table indicates that the in-memory ASP.NET Core server is less performant in handling object results (with or without a Formatter attribute) than when handling IActionResults
 
