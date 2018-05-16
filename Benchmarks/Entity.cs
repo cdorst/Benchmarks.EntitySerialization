@@ -56,6 +56,24 @@ namespace JsonBenchmarks
             };
         }
 
+        public static Entity FromBytesReadOnlySpanBitConverter(in ReadOnlySpan<byte> bytes, in int entityId = 0)
+            => new Entity
+            {
+                EntityId = entityId,
+                ForeignKeyOneId = BitConverter.ToInt32(
+                    bytes.Slice(0, 4).ToArray(), 0),
+                ForeignKeyTwoId = BitConverter.ToInt32(
+                    bytes.Slice(5).ToArray(), 0)
+            };
+
+        public static Entity FromBytesReadOnlySpanRefStructs(in ReadOnlySpan<byte> bytes, in int entityId = 0)
+            => new Entity
+            {
+                EntityId = entityId,
+                ForeignKeyOneId = new Int32ByteMap(bytes.Slice(0, 4)).Value,
+                ForeignKeyTwoId = new Int32ByteMap(bytes.Slice(5)).Value
+            };
+
         public byte[] ToBytes()
         {
             var result = new byte[8];
