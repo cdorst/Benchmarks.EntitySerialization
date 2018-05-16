@@ -47,6 +47,10 @@ namespace JsonBenchmarks
         public ReadOnlyMemory<byte> ByteSerializeReadOnlyMemory() => Constants.Entity.ToBytesReadonlyMemory();
         [Benchmark]
         public ReadOnlySpan<byte> ByteSerializeReadOnlySpan() => Constants.Entity.ToBytesReadonlySpan();
+        [Benchmark]
+        public Entity ByteDeserializeReadOnlySpanBitConverter() => Entity.FromBytesReadOnlySpanBitConverter(Constants.Bytes.AsSpan(), Constants.EntityId);
+        [Benchmark]
+        public Entity ByteDeserializeReadOnlySpanBitRefStructs() => Entity.FromBytesReadOnlySpanRefStructs(Constants.Bytes.AsSpan(), Constants.EntityId);
 
         [Benchmark]
         public byte[] BlockCopyMixedBytes() => MixedKeyTypes.Default.ToBytes();
