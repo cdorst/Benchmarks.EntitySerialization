@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JsonBenchmarks
+namespace Benchmarks
 {
     public class AspNetStartup
     {

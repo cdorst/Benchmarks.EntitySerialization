@@ -1,19 +1,33 @@
 ﻿using Common.Extensions.Memory;
+using MessagePack;
+using ProtoBuf;
 using System;
 using System.Text;
 using static Common.Extensions.Memory.IntegerReadOnlyMemoryMapper;
 using static Common.Extensions.Memory.IntegerReadOnlySpanMapper;
 
-namespace JsonBenchmarks
+namespace Benchmarks
 {
+    [MessagePackObject]
+    [ProtoContract]
     public class Entity
     {
+        [IgnoreMember]
+        [ProtoIgnore]
         public int EntityId { get; set; } = 1_000_000;
 
+        [IgnoreMember]
+        [ProtoIgnore]
         public Foo ForeignKeyOne { get; set; } // Assume that reference objects are not loaded
+        [Key(0)]
+        [ProtoMember(1)]
         public int ForeignKeyOneId { get; set; } = 1_000_001;
 
+        [IgnoreMember]
+        [ProtoIgnore]
         public Foo ForeignKeyTwo { get; set; } // Assume that reference objects are not loaded
+        [Key(1)]
+        [ProtoMember(2)]
         public int ForeignKeyTwoId { get; set; } = 1_000_002;
 
         public override string ToString()
@@ -63,7 +77,7 @@ namespace JsonBenchmarks
                 ForeignKeyOneId = BitConverter.ToInt32(
                     bytes.Slice(0, 4).ToArray(), 0),
                 ForeignKeyTwoId = BitConverter.ToInt32(
-                    bytes.Slice(5).ToArray(), 0)
+                    bytes.Slice(4).ToArray(), 0)
             };
 
         public static Entity FromBytesReadOnlySpanRefStructs(in ReadOnlySpan<byte> bytes, in int entityId = 0)
@@ -71,7 +85,7 @@ namespace JsonBenchmarks
             {
                 EntityId = entityId,
                 ForeignKeyOneId = new Int32ByteMap(bytes.Slice(0, 4)).Value,
-                ForeignKeyTwoId = new Int32ByteMap(bytes.Slice(5)).Value
+                ForeignKeyTwoId = new Int32ByteMap(bytes.Slice(4)).Value
             };
 
         public byte[] ToBytes()

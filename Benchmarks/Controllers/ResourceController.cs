@@ -8,7 +8,7 @@ using System;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace JsonBenchmarks.Controllers
+namespace Benchmarks.Controllers
 {
     [Route("resource")]
     public class ResourceController : ControllerBase

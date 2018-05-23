@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace JsonBenchmarks
+namespace Benchmarks
 {
     public class AspNetStartupUseRouter
     {
