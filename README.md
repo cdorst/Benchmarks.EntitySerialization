@@ -25,8 +25,8 @@ Within the byte[] category, these methodologies are tested:
 
 - `Buffer.BlockCopy`
 - `Span<byte>`
-- `ReadOnlyMemory<byte>` using `CDorst.Common.Extensions.Memory
-- `ReadOnlySpan<byte>` using `CDorst.Common.Extensions.Memory
+- `ReadOnlyMemory<byte>` using `CDorst.Common.Extensions.Memory`
+- `ReadOnlySpan<byte>` using `CDorst.Common.Extensions.Memory`
 - `protobuf-net` protocol buffers
 - `MessagePack`
 
@@ -52,38 +52,39 @@ BenchmarkDotNet=v0.10.14, OS=Windows 10.0.17134
 Intel Core i7-7700HQ CPU 2.80GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
 .NET Core SDK=2.1.300-rc1-008673
   [Host]     : .NET Core 2.1.0-rc1 (CoreCLR 4.6.26426.02, CoreFX 4.6.26426.04), 64bit RyuJIT
-  Job-LUOAKF : .NET Core 2.1.0-rc1 (CoreCLR 4.6.26426.02, CoreFX 4.6.26426.04), 64bit RyuJIT
+  Job-BHDFIP : .NET Core 2.1.0-rc1 (CoreCLR 4.6.26426.02, CoreFX 4.6.26426.04), 64bit RyuJIT
 
 LaunchCount=10  
 
 ```
-|                                   Method |          Mean |       Error |        StdDev |        Median | Rank |
-|----------------------------------------- |--------------:|------------:|--------------:|--------------:|-----:|
-|                     BlockCopyDeserialize |      42.34 ns |   0.2441 ns |     0.9027 ns |      42.31 ns |    9 |
-|                BlockCopyDeserializeByRef |      42.03 ns |   0.2022 ns |     0.7352 ns |      42.02 ns |    8 |
-|                       BlockCopySerialize |      22.55 ns |   0.1142 ns |     0.4180 ns |      22.56 ns |    3 |
-|            ByteSerializeSpanBitConverter |      29.82 ns |   0.2318 ns |     0.8803 ns |      29.74 ns |    5 |
-|          ByteSerializeSpanStructReadonly |      44.09 ns |   0.2607 ns |     0.9412 ns |      43.98 ns |   10 |
-|              ByteSerializeReadOnlyMemory |      16.76 ns |   0.3013 ns |     1.0916 ns |      16.30 ns |    2 |
-|                ByteSerializeReadOnlySpan |      15.28 ns |   0.0930 ns |     0.3405 ns |      15.21 ns |    1 |
-|  ByteDeserializeReadOnlySpanBitConverter |      37.06 ns |   0.3088 ns |     1.1226 ns |      36.69 ns |    7 |
-| ByteDeserializeReadOnlySpanBitRefStructs |      35.15 ns |   0.1331 ns |     0.4788 ns |      34.99 ns |    6 |
-|                      BlockCopyMixedBytes |      25.65 ns |   0.1862 ns |     0.7162 ns |      25.65 ns |    4 |
-|                         StringBuilderCsv |     122.41 ns |   0.6778 ns |     2.4382 ns |     122.29 ns |   12 |
-|                         JilJsonSerialize |     405.32 ns |   2.1953 ns |     7.9533 ns |     405.08 ns |   14 |
-|                       JilJsonDeserialize |     425.24 ns |   3.5032 ns |    12.8251 ns |     422.24 ns |   15 |
-|                        StringBuilderJson |     431.59 ns |   2.3170 ns |     8.5985 ns |     430.90 ns |   16 |
-|                           NewtonsoftJson |   1,420.23 ns |   6.4967 ns |    23.8658 ns |   1,418.10 ns |   17 |
-|                              ProtobufNet |     330.28 ns |   1.9827 ns |     7.3083 ns |     329.99 ns |   13 |
-|                        MessagePackCSharp |      76.13 ns |   1.2688 ns |     4.5643 ns |      76.72 ns |   11 |
-|                 AspNetCoreApiDefaultJson | 114,786.54 ns | 500.7055 ns | 1,820.3811 ns | 114,700.95 ns |   24 |
-|            AspNetCoreApiJilJsonFormatter | 112,423.19 ns | 409.3078 ns | 1,482.8857 ns | 112,271.83 ns |   23 |
-|         AspNetCoreApiJilJsonActionResult | 100,674.24 ns | 523.2267 ns | 1,888.9243 ns | 100,633.11 ns |   21 |
-|                         AspNetCoreApiCsv |  91,274.93 ns | 427.8149 ns | 1,571.5917 ns |  91,142.81 ns |   20 |
-|                   AspNetCoreApiByteArray | 105,828.85 ns | 387.7865 ns | 1,404.9159 ns | 105,952.85 ns |   22 |
-|       AspNetCoreApiByteArrayActionResult |  88,801.22 ns | 434.2339 ns | 1,643.5558 ns |  88,740.05 ns |   19 |
-|           AspNetCoreApiReadOnlyMemoryMvc |  88,833.91 ns | 374.0342 ns | 1,364.5926 ns |  88,830.05 ns |   19 |
-|        AspNetCoreApiReadOnlyMemoryRouter |  72,064.47 ns | 330.4402 ns | 1,197.1556 ns |  72,125.50 ns |   18 |
+|                                   Method |          Mean |       Error |        StdDev |        Median | Rank |  Gen 0 | Allocated |
+|----------------------------------------- |--------------:|------------:|--------------:|--------------:|-----:|-------:|----------:|
+|                     BlockCopyDeserialize |      42.12 ns |   0.2810 ns |     1.0287 ns |      42.00 ns |    8 | 0.0356 |     112 B |
+|                BlockCopyDeserializeByRef |      41.97 ns |   0.2713 ns |     0.9761 ns |      41.78 ns |    8 | 0.0356 |     112 B |
+|                       BlockCopySerialize |      22.29 ns |   0.2173 ns |     0.7928 ns |      22.10 ns |    3 | 0.0203 |      64 B |
+|            ByteSerializeSpanBitConverter |      30.36 ns |   0.2618 ns |     1.1534 ns |      30.21 ns |    5 | 0.0305 |      96 B |
+|          ByteSerializeSpanStructReadonly |      43.95 ns |   0.2895 ns |     1.0562 ns |      43.72 ns |    9 | 0.0305 |      96 B |
+|              ByteSerializeReadOnlyMemory |      16.35 ns |   0.0879 ns |     0.3186 ns |      16.31 ns |    2 | 0.0102 |      32 B |
+|                ByteSerializeReadOnlySpan |      15.49 ns |   0.1359 ns |     0.5160 ns |      15.32 ns |    1 | 0.0102 |      32 B |
+|  ByteDeserializeReadOnlySpanBitConverter |      37.32 ns |   0.2409 ns |     0.8728 ns |      37.15 ns |    7 | 0.0356 |     112 B |
+| ByteDeserializeReadOnlySpanBitRefStructs |      35.88 ns |   0.1776 ns |     0.6614 ns |      35.76 ns |    6 | 0.0153 |      48 B |
+|                   MixedKeyTypesBlockCopy |      25.83 ns |   0.1834 ns |     0.6805 ns |      25.82 ns |    4 | 0.0356 |     112 B |
+|                        MixedKeyTypesSpan |      42.00 ns |   0.2012 ns |     0.7262 ns |      41.95 ns |    8 | 0.0127 |      40 B |
+|                         StringBuilderCsv |     121.82 ns |   0.6861 ns |     2.6467 ns |     121.37 ns |   11 | 0.0508 |     160 B |
+|                         JilJsonSerialize |     398.28 ns |   2.2293 ns |     8.1612 ns |     397.39 ns |   13 | 0.2594 |     816 B |
+|                       JilJsonDeserialize |     427.69 ns |   3.1554 ns |    11.5915 ns |     428.34 ns |   14 | 0.0458 |     144 B |
+|                        StringBuilderJson |     434.97 ns |   2.5303 ns |    10.6302 ns |     435.38 ns |   15 | 0.2542 |     800 B |
+|                           NewtonsoftJson |   1,399.09 ns |   7.5792 ns |    28.3148 ns |   1,392.33 ns |   16 | 0.5150 |    1624 B |
+|                              ProtobufNet |     326.17 ns |   1.7980 ns |     6.7832 ns |     326.03 ns |   12 | 0.1702 |     536 B |
+|                        MessagePackCSharp |      72.28 ns |   0.5171 ns |     1.9061 ns |      72.00 ns |   10 | 0.0126 |      40 B |
+|                 AspNetCoreApiDefaultJson | 115,827.86 ns | 528.7379 ns | 1,908.8205 ns | 115,761.51 ns |   24 | 3.9063 |    5512 B |
+|            AspNetCoreApiJilJsonFormatter | 114,701.84 ns | 524.6135 ns | 1,979.2290 ns | 114,571.80 ns |   23 | 3.7842 |    5536 B |
+|         AspNetCoreApiJilJsonActionResult | 102,398.60 ns | 403.6869 ns | 1,488.0215 ns | 102,229.11 ns |   21 | 3.9063 |    5552 B |
+|                         AspNetCoreApiCsv |  93,839.51 ns | 508.7330 ns | 1,849.5661 ns |  93,762.68 ns |   20 | 3.4180 |    5448 B |
+|                   AspNetCoreApiByteArray | 107,763.87 ns | 393.4655 ns | 1,405.2910 ns | 107,954.99 ns |   22 | 3.7842 |    5456 B |
+|       AspNetCoreApiByteArrayActionResult |  91,049.77 ns | 355.9585 ns | 1,285.0619 ns |  90,881.38 ns |   18 | 3.4180 |    5568 B |
+|           AspNetCoreApiReadOnlyMemoryMvc |  91,604.79 ns | 422.9263 ns | 1,542.9657 ns |  91,481.84 ns |   19 | 3.4180 |    5576 B |
+|        AspNetCoreApiReadOnlyMemoryRouter |  74,332.75 ns | 314.6925 ns | 1,123.9474 ns |  74,352.01 ns |   17 | 2.6855 |    5416 B |
 
 ### Data Size
 
@@ -103,11 +104,11 @@ ToBytes result is 9.0x more compact than JSON representation and 1.9x more compa
 
 ### API Response Time
 
-In-memory ASP.NET Core web server Jil JSON endpoint responds 14.02% faster than default JsonFormatter endpoint
+In-memory ASP.NET Core web server Jil JSON endpoint responds 13.11% faster than default JsonFormatter endpoint
 
-In-memory ASP.NET Core web server CSV endpoint responds 25.76% faster than default JsonFormatter endpoint
+In-memory ASP.NET Core web server CSV endpoint responds 23.43% faster than default JsonFormatter endpoint
 
-In-memory ASP.NET Core web server byte[] endpoint responds 29.26% faster than default JsonFormatter endpoint
+In-memory ASP.NET Core web server byte[] endpoint responds 27.21% faster than default JsonFormatter endpoint
 
 ### Proof of Working byte[] Serialization
 

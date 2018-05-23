@@ -42,7 +42,7 @@ namespace Benchmarks.Controllers
             private readonly byte[] _payload;
             private readonly int _payloadLength;
 
-            public BytesActionResult(byte[] bytes)
+            public BytesActionResult(in byte[] bytes)
             {
                 _payload = bytes;
                 _payloadLength = _payload.Length;
@@ -61,7 +61,7 @@ namespace Benchmarks.Controllers
         {
             private readonly ReadOnlyMemory<byte> _payload;
 
-            public ReadOnlyMemoryActionResult(ReadOnlyMemory<byte> bytes)
+            public ReadOnlyMemoryActionResult(in ReadOnlyMemory<byte> bytes)
             {
                 _payload = bytes;
             }
@@ -80,7 +80,7 @@ namespace Benchmarks.Controllers
             private readonly byte[] _payload;
             private readonly int _payloadLength;
 
-            public CsvActionResult(string csv)
+            public CsvActionResult(in string csv)
             {
                 _payload = Encoding.UTF8.GetBytes(csv);
                 _payloadLength = _payload.Length;
@@ -101,7 +101,7 @@ namespace Benchmarks.Controllers
             private readonly byte[] _payload;
             private readonly int _payloadLength;
 
-            public JsonActionResult(object @object)
+            public JsonActionResult(in object @object)
             {
                 _payload = Encoding.UTF8.GetBytes(JSON.Serialize(@object));
                 _payloadLength = _payload.Length;
@@ -143,7 +143,7 @@ namespace Benchmarks.Controllers
 
     internal sealed class JilFormatterAttribute : Attribute, IResultFilter
     {
-        private readonly IOutputFormatter _jilFormatter = new JilOutputFormatter();
+        private static readonly IOutputFormatter _jilFormatter = new JilOutputFormatter();
 
         public void OnResultExecuted(ResultExecutedContext context)
         {

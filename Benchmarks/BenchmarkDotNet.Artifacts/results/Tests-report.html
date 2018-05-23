@@ -17,39 +17,40 @@ BenchmarkDotNet=v0.10.14, OS=Windows 10.0.17134
 Intel Core i7-7700HQ CPU 2.80GHz (Kaby Lake), 1 CPU, 8 logical and 4 physical cores
 .NET Core SDK=2.1.300-rc1-008673
   [Host]     : .NET Core 2.1.0-rc1 (CoreCLR 4.6.26426.02, CoreFX 4.6.26426.04), 64bit RyuJIT
-  Job-LUOAKF : .NET Core 2.1.0-rc1 (CoreCLR 4.6.26426.02, CoreFX 4.6.26426.04), 64bit RyuJIT
+  Job-BHDFIP : .NET Core 2.1.0-rc1 (CoreCLR 4.6.26426.02, CoreFX 4.6.26426.04), 64bit RyuJIT
 </code></pre>
 <pre><code>LaunchCount=10  
 </code></pre>
 
 <table>
-<thead><tr><th>                            Method</th><th>   Mean</th><th>Error</th><th> StdDev</th><th> Median</th><th>Rank</th>
+<thead><tr><th>                            Method</th><th>   Mean</th><th>Error</th><th> StdDev</th><th> Median</th><th>Rank</th><th>Gen 0</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>BlockCopyDeserialize</td><td>42.34 ns</td><td>0.2441 ns</td><td>0.9027 ns</td><td>42.31 ns</td><td>9</td>
-</tr><tr><td>BlockCopyDeserializeByRef</td><td>42.03 ns</td><td>0.2022 ns</td><td>0.7352 ns</td><td>42.02 ns</td><td>8</td>
-</tr><tr><td>BlockCopySerialize</td><td>22.55 ns</td><td>0.1142 ns</td><td>0.4180 ns</td><td>22.56 ns</td><td>3</td>
-</tr><tr><td>ByteSerializeSpanBitConverter</td><td>29.82 ns</td><td>0.2318 ns</td><td>0.8803 ns</td><td>29.74 ns</td><td>5</td>
-</tr><tr><td>ByteSerializeSpanStructReadonly</td><td>44.09 ns</td><td>0.2607 ns</td><td>0.9412 ns</td><td>43.98 ns</td><td>10</td>
-</tr><tr><td>ByteSerializeReadOnlyMemory</td><td>16.76 ns</td><td>0.3013 ns</td><td>1.0916 ns</td><td>16.30 ns</td><td>2</td>
-</tr><tr><td>ByteSerializeReadOnlySpan</td><td>15.28 ns</td><td>0.0930 ns</td><td>0.3405 ns</td><td>15.21 ns</td><td>1</td>
-</tr><tr><td>ByteDeserializeReadOnlySpanBitConverter</td><td>37.06 ns</td><td>0.3088 ns</td><td>1.1226 ns</td><td>36.69 ns</td><td>7</td>
-</tr><tr><td>ByteDeserializeReadOnlySpanBitRefStructs</td><td>35.15 ns</td><td>0.1331 ns</td><td>0.4788 ns</td><td>34.99 ns</td><td>6</td>
-</tr><tr><td>BlockCopyMixedBytes</td><td>25.65 ns</td><td>0.1862 ns</td><td>0.7162 ns</td><td>25.65 ns</td><td>4</td>
-</tr><tr><td>StringBuilderCsv</td><td>122.41 ns</td><td>0.6778 ns</td><td>2.4382 ns</td><td>122.29 ns</td><td>12</td>
-</tr><tr><td>JilJsonSerialize</td><td>405.32 ns</td><td>2.1953 ns</td><td>7.9533 ns</td><td>405.08 ns</td><td>14</td>
-</tr><tr><td>JilJsonDeserialize</td><td>425.24 ns</td><td>3.5032 ns</td><td>12.8251 ns</td><td>422.24 ns</td><td>15</td>
-</tr><tr><td>StringBuilderJson</td><td>431.59 ns</td><td>2.3170 ns</td><td>8.5985 ns</td><td>430.90 ns</td><td>16</td>
-</tr><tr><td>NewtonsoftJson</td><td>1,420.23 ns</td><td>6.4967 ns</td><td>23.8658 ns</td><td>1,418.10 ns</td><td>17</td>
-</tr><tr><td>ProtobufNet</td><td>330.28 ns</td><td>1.9827 ns</td><td>7.3083 ns</td><td>329.99 ns</td><td>13</td>
-</tr><tr><td>MessagePackCSharp</td><td>76.13 ns</td><td>1.2688 ns</td><td>4.5643 ns</td><td>76.72 ns</td><td>11</td>
-</tr><tr><td>AspNetCoreApiDefaultJson</td><td>114,786.54 ns</td><td>500.7055 ns</td><td>1,820.3811 ns</td><td>114,700.95 ns</td><td>24</td>
-</tr><tr><td>AspNetCoreApiJilJsonFormatter</td><td>112,423.19 ns</td><td>409.3078 ns</td><td>1,482.8857 ns</td><td>112,271.83 ns</td><td>23</td>
-</tr><tr><td>AspNetCoreApiJilJsonActionResult</td><td>100,674.24 ns</td><td>523.2267 ns</td><td>1,888.9243 ns</td><td>100,633.11 ns</td><td>21</td>
-</tr><tr><td>AspNetCoreApiCsv</td><td>91,274.93 ns</td><td>427.8149 ns</td><td>1,571.5917 ns</td><td>91,142.81 ns</td><td>20</td>
-</tr><tr><td>AspNetCoreApiByteArray</td><td>105,828.85 ns</td><td>387.7865 ns</td><td>1,404.9159 ns</td><td>105,952.85 ns</td><td>22</td>
-</tr><tr><td>AspNetCoreApiByteArrayActionResult</td><td>88,801.22 ns</td><td>434.2339 ns</td><td>1,643.5558 ns</td><td>88,740.05 ns</td><td>19</td>
-</tr><tr><td>AspNetCoreApiReadOnlyMemoryMvc</td><td>88,833.91 ns</td><td>374.0342 ns</td><td>1,364.5926 ns</td><td>88,830.05 ns</td><td>19</td>
-</tr><tr><td>AspNetCoreApiReadOnlyMemoryRouter</td><td>72,064.47 ns</td><td>330.4402 ns</td><td>1,197.1556 ns</td><td>72,125.50 ns</td><td>18</td>
+</thead><tbody><tr><td>BlockCopyDeserialize</td><td>42.12 ns</td><td>0.2810 ns</td><td>1.0287 ns</td><td>42.00 ns</td><td>8</td><td>0.0356</td><td>112 B</td>
+</tr><tr><td>BlockCopyDeserializeByRef</td><td>41.97 ns</td><td>0.2713 ns</td><td>0.9761 ns</td><td>41.78 ns</td><td>8</td><td>0.0356</td><td>112 B</td>
+</tr><tr><td>BlockCopySerialize</td><td>22.29 ns</td><td>0.2173 ns</td><td>0.7928 ns</td><td>22.10 ns</td><td>3</td><td>0.0203</td><td>64 B</td>
+</tr><tr><td>ByteSerializeSpanBitConverter</td><td>30.36 ns</td><td>0.2618 ns</td><td>1.1534 ns</td><td>30.21 ns</td><td>5</td><td>0.0305</td><td>96 B</td>
+</tr><tr><td>ByteSerializeSpanStructReadonly</td><td>43.95 ns</td><td>0.2895 ns</td><td>1.0562 ns</td><td>43.72 ns</td><td>9</td><td>0.0305</td><td>96 B</td>
+</tr><tr><td>ByteSerializeReadOnlyMemory</td><td>16.35 ns</td><td>0.0879 ns</td><td>0.3186 ns</td><td>16.31 ns</td><td>2</td><td>0.0102</td><td>32 B</td>
+</tr><tr><td>ByteSerializeReadOnlySpan</td><td>15.49 ns</td><td>0.1359 ns</td><td>0.5160 ns</td><td>15.32 ns</td><td>1</td><td>0.0102</td><td>32 B</td>
+</tr><tr><td>ByteDeserializeReadOnlySpanBitConverter</td><td>37.32 ns</td><td>0.2409 ns</td><td>0.8728 ns</td><td>37.15 ns</td><td>7</td><td>0.0356</td><td>112 B</td>
+</tr><tr><td>ByteDeserializeReadOnlySpanBitRefStructs</td><td>35.88 ns</td><td>0.1776 ns</td><td>0.6614 ns</td><td>35.76 ns</td><td>6</td><td>0.0153</td><td>48 B</td>
+</tr><tr><td>MixedKeyTypesBlockCopy</td><td>25.83 ns</td><td>0.1834 ns</td><td>0.6805 ns</td><td>25.82 ns</td><td>4</td><td>0.0356</td><td>112 B</td>
+</tr><tr><td>MixedKeyTypesSpan</td><td>42.00 ns</td><td>0.2012 ns</td><td>0.7262 ns</td><td>41.95 ns</td><td>8</td><td>0.0127</td><td>40 B</td>
+</tr><tr><td>StringBuilderCsv</td><td>121.82 ns</td><td>0.6861 ns</td><td>2.6467 ns</td><td>121.37 ns</td><td>11</td><td>0.0508</td><td>160 B</td>
+</tr><tr><td>JilJsonSerialize</td><td>398.28 ns</td><td>2.2293 ns</td><td>8.1612 ns</td><td>397.39 ns</td><td>13</td><td>0.2594</td><td>816 B</td>
+</tr><tr><td>JilJsonDeserialize</td><td>427.69 ns</td><td>3.1554 ns</td><td>11.5915 ns</td><td>428.34 ns</td><td>14</td><td>0.0458</td><td>144 B</td>
+</tr><tr><td>StringBuilderJson</td><td>434.97 ns</td><td>2.5303 ns</td><td>10.6302 ns</td><td>435.38 ns</td><td>15</td><td>0.2542</td><td>800 B</td>
+</tr><tr><td>NewtonsoftJson</td><td>1,399.09 ns</td><td>7.5792 ns</td><td>28.3148 ns</td><td>1,392.33 ns</td><td>16</td><td>0.5150</td><td>1624 B</td>
+</tr><tr><td>ProtobufNet</td><td>326.17 ns</td><td>1.7980 ns</td><td>6.7832 ns</td><td>326.03 ns</td><td>12</td><td>0.1702</td><td>536 B</td>
+</tr><tr><td>MessagePackCSharp</td><td>72.28 ns</td><td>0.5171 ns</td><td>1.9061 ns</td><td>72.00 ns</td><td>10</td><td>0.0126</td><td>40 B</td>
+</tr><tr><td>AspNetCoreApiDefaultJson</td><td>115,827.86 ns</td><td>528.7379 ns</td><td>1,908.8205 ns</td><td>115,761.51 ns</td><td>24</td><td>3.9063</td><td>5512 B</td>
+</tr><tr><td>AspNetCoreApiJilJsonFormatter</td><td>114,701.84 ns</td><td>524.6135 ns</td><td>1,979.2290 ns</td><td>114,571.80 ns</td><td>23</td><td>3.7842</td><td>5536 B</td>
+</tr><tr><td>AspNetCoreApiJilJsonActionResult</td><td>102,398.60 ns</td><td>403.6869 ns</td><td>1,488.0215 ns</td><td>102,229.11 ns</td><td>21</td><td>3.9063</td><td>5552 B</td>
+</tr><tr><td>AspNetCoreApiCsv</td><td>93,839.51 ns</td><td>508.7330 ns</td><td>1,849.5661 ns</td><td>93,762.68 ns</td><td>20</td><td>3.4180</td><td>5448 B</td>
+</tr><tr><td>AspNetCoreApiByteArray</td><td>107,763.87 ns</td><td>393.4655 ns</td><td>1,405.2910 ns</td><td>107,954.99 ns</td><td>22</td><td>3.7842</td><td>5456 B</td>
+</tr><tr><td>AspNetCoreApiByteArrayActionResult</td><td>91,049.77 ns</td><td>355.9585 ns</td><td>1,285.0619 ns</td><td>90,881.38 ns</td><td>18</td><td>3.4180</td><td>5568 B</td>
+</tr><tr><td>AspNetCoreApiReadOnlyMemoryMvc</td><td>91,604.79 ns</td><td>422.9263 ns</td><td>1,542.9657 ns</td><td>91,481.84 ns</td><td>19</td><td>3.4180</td><td>5576 B</td>
+</tr><tr><td>AspNetCoreApiReadOnlyMemoryRouter</td><td>74,332.75 ns</td><td>314.6925 ns</td><td>1,123.9474 ns</td><td>74,352.01 ns</td><td>17</td><td>2.6855</td><td>5416 B</td>
 </tr></tbody></table>
 </body>
 </html>

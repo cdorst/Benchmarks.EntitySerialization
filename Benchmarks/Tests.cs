@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Benchmarks
 {
-    [SimpleJob(10)]
+    [SimpleJob(10), MemoryDiagnoser]
     [RPlotExporter, RankColumn]
     public class Tests
     {
@@ -36,7 +36,10 @@ namespace Benchmarks
         public Entity ByteDeserializeReadOnlySpanBitRefStructs() => Entity.FromBytesReadOnlySpanRefStructs(Constants.Bytes.AsSpan(), Constants.EntityId);
 
         [Benchmark]
-        public byte[] BlockCopyMixedBytes() => MixedKeyTypes.Default.ToBytes();
+        public byte[] MixedKeyTypesBlockCopy() => MixedKeyTypes.Default.ToBytes();
+        [Benchmark]
+        public ReadOnlySpan<byte> MixedKeyTypesSpan() => MixedKeyTypes.Default.ToBytesReadonlySpan();
+
         [Benchmark]
         public string StringBuilderCsv() => Constants.Entity.ToStringCsv();
         [Benchmark]

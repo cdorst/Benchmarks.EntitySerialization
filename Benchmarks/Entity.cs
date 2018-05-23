@@ -145,12 +145,15 @@ namespace Benchmarks
         public short ForeignKeyThreeId { get; set; } = 1_000;
         public byte ForeignKeyFourId { get; set; } = 100;
 
-        public byte[] ToBytes()
+        public byte[] ToBytes() // 32 bytes
         {
             var result = new byte[32];
             Buffer.BlockCopy(new[] { ForeignKeyOneId, ForeignKeyTwoId, ForeignKeyThreeId, ForeignKeyFourId }, 0, result, 0, 32);
             return result;
         }
+
+        public ReadOnlySpan<byte> ToBytesReadonlySpan() // 15 bytes
+            => MapSpan(ForeignKeyOneId, ForeignKeyTwoId, ForeignKeyThreeId, ForeignKeyFourId);
     }
 
     public class Foo
